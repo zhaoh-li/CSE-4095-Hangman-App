@@ -1,0 +1,15 @@
+# Not part of the submission
+cursor_transcript.md
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Virtual environments
+venv/
+.venv/
+
+# Editors / OS
+.vscode/
+.DS_Store
