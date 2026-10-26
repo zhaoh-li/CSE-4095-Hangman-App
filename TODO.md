@@ -42,37 +42,37 @@ The authoritative system requirements are defined in `Specification.md`.
 
 **Word management (`words.py`), moved from Phase 2**
 
-- [ ] Create a word-loading module or helper functions.
-- [ ] Load Easy, Medium, and Hard word lists.
-- [ ] Validate that loaded words contain only alphabetic characters.
-- [ ] Remove accidental duplicates when loading.
-- [ ] Support random word selection by difficulty.
-- [ ] Return an error for an invalid difficulty.
+- [x] Create a word-loading module or helper functions.
+- [x] Load Easy, Medium, and Hard word lists.
+- [x] Validate that loaded words contain only alphabetic characters.
+- [x] Remove accidental duplicates when loading.
+- [x] Support random word selection by difficulty.
+- [x] Return an error for an invalid difficulty.
 
 **Game engine (`game.py`)**
 
-- [ ] Create `game.py`.
-- [ ] Implement a `HangmanGame` class.
-- [ ] Support starting a game from a difficulty level (random word chosen via `words.py`).
-- [ ] Store the hidden word internally.
-- [ ] Track guessed letters.
-- [ ] Track correct and incorrect letters.
-- [ ] Track the maximum number of incorrect guesses.
-- [ ] Track remaining incorrect guesses.
-- [ ] Implement single-letter guess validation.
-- [ ] Detect duplicate guesses.
-- [ ] Implement pattern generation (the masked word).
-- [ ] Implement win detection.
-- [ ] Implement loss detection.
-- [ ] Prevent further guesses after a game ends.
-- [ ] Implement game status values such as `playing`, `won`, and `lost`.
-- [ ] Implement a method that returns a client-safe game-state dictionary.
-- [ ] Reveal the answer only after the game ends.
+- [x] Create `game.py`.
+- [x] Implement a `HangmanGame` class.
+- [x] Support starting a game from a difficulty level (random word chosen via `words.py`).
+- [x] Store the hidden word internally.
+- [x] Track guessed letters.
+- [x] Track correct and incorrect letters.
+- [x] Track the maximum number of incorrect guesses.
+- [x] Track remaining incorrect guesses.
+- [x] Implement single-letter guess validation.
+- [x] Detect duplicate guesses.
+- [x] Implement pattern generation (the masked word).
+- [x] Implement win detection.
+- [x] Implement loss detection.
+- [x] Prevent further guesses after a game ends.
+- [x] Implement game status values such as `playing`, `won`, and `lost`.
+- [x] Implement a method that returns a client-safe game-state dictionary.
+- [x] Reveal the answer only after the game ends.
 
 **Tests**
 
-- [ ] Add unit tests for the game engine (`tests/test_game.py`).
-- [ ] Add tests for word loading and word selection (`tests/test_words.py`).
+- [x] Add unit tests for the game engine (`tests/test_game.py`).
+- [x] Add tests for word loading and word selection (`tests/test_words.py`).
 
 ### Completion Criteria
 
