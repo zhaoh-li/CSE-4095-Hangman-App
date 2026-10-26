@@ -23,6 +23,7 @@ The authoritative system requirements are defined in `Specification.md`.
 - Never expose the hidden word before a game ends.
 - Add tests as each phase is implemented rather than postponing testing until the end.
 - Checkbox key: `[ ]` = to do, `[x]` = done, `[O]` = optional (not required for this assignment).
+- Check off TODO items as each one is finished. The final, updated TODO is part of the submission.
 
 ---
 
@@ -34,10 +35,10 @@ The authoritative system requirements are defined in `Specification.md`.
 
 **Project skeleton**
 
-- [ ] Create the project directory structure.
-- [ ] Add `words/easy.txt`.
-- [ ] Add `words/medium.txt`.
-- [ ] Add `words/hard.txt`.
+- [x] Create the project directory structure.
+- [x] Add `words/easy.txt`.
+- [x] Add `words/medium.txt`.
+- [x] Add `words/hard.txt`.
 
 **Word management (`words.py`), moved from Phase 2**
 
@@ -113,6 +114,12 @@ Merged into Phase 1 (see the assignment note there). Phase numbers after this ar
 - [ ] Return appropriate HTTP status codes.
 - [ ] Handle unknown game IDs.
 - [ ] Handle malformed requests.
+- [ ] Match the spec's request and response JSON fields exactly:
+  - Create request: `{"difficulty": "easy" | "medium" | "hard"}` (lowercase).
+  - Guess request: `{"letter": "e"}`.
+  - Responses include `pattern` (spaced, e.g. `_ e _ _ e`), `guessed_letters`, `incorrect_letters`, `remaining_guesses`, and `status`; create also returns `game_id`.
+  - All three endpoints return the full game state (a superset of the spec's fields). The answer appears as `word` only after the game ends.
+- [ ] `python server.py` starts the server locally (debug off by default).
 - [ ] Ensure the hidden word is never leaked during an active game.
 - [ ] Add API tests (`tests/test_server.py`), including a test that two games don't affect each other.
 
@@ -332,19 +339,21 @@ A student can solve the assignment using the documented API, but cannot gain the
 
 ## Phase 12 — Logging and Replay
 
+> **Assignment note:** Logging and replay come from the spec only and are not required by the assignment.
+
 ### Tasks
 
-- [ ] Define a game-log format.
-- [ ] Record game ID.
-- [ ] Record difficulty.
-- [ ] Record each guess in order.
-- [ ] Record whether each guess was correct.
-- [ ] Record pattern after each guess.
-- [ ] Record remaining guesses after each move.
-- [ ] Record final outcome.
-- [ ] Add optional timestamps.
-- [ ] Add a replay utility or endpoint.
-- [ ] Ensure logs do not expose hidden evaluation words before evaluation completion.
+- [O] Define a game-log format.
+- [O] Record game ID.
+- [O] Record difficulty.
+- [O] Record each guess in order.
+- [O] Record whether each guess was correct.
+- [O] Record pattern after each guess.
+- [O] Record remaining guesses after each move.
+- [O] Record final outcome.
+- [O] Add optional timestamps.
+- [O] Add a replay utility or endpoint.
+- [O] Ensure logs do not expose hidden evaluation words before evaluation completion.
 
 ### Completion Criteria
 
@@ -368,10 +377,10 @@ An instructor can inspect or replay a completed game step by step for debugging 
 - [ ] Test answer disclosure rules.
 - [ ] Test terminal-client integration.
 - [ ] Test browser-client integration.
-- [ ] Test automated bots.
-- [ ] Test evaluation sessions.
-- [ ] Test scoring.
-- [ ] Test leaderboard ordering.
+- [O] Test automated bots.
+- [O] Test evaluation sessions.
+- [O] Test scoring.
+- [O] Test leaderboard ordering.
 - [ ] Add an end-to-end automated test.
 
 ### Completion Criteria
@@ -382,25 +391,49 @@ The major user flows and failure cases are covered by automated tests.
 
 ## Phase 14 — Documentation and Packaging
 
+> **Assignment note:** The README must include instructions for running the application locally. The repository must contain the items listed in the final checklist task below. Bot, scoring, evaluation, and leaderboard documentation is optional.
+
 ### Tasks
 
 - [ ] Create or update `README.md`.
-- [ ] Document installation.
+- [ ] README: step-by-step local setup (virtual environment, `pip install -r requirements.txt`, `python server.py`, open `http://localhost:5000`, run the tests).
 - [ ] Document how to start the server.
 - [ ] Document how to use the browser client.
 - [ ] Document how to use the terminal client.
 - [ ] Document the REST API.
-- [ ] Document how to write a student bot.
+- [O] Document how to write a student bot.
 - [ ] Provide example requests and responses.
-- [ ] Document scoring.
-- [ ] Document evaluation rules.
-- [ ] Document leaderboard behavior.
+- [O] Document scoring.
+- [O] Document evaluation rules.
+- [O] Document leaderboard behavior.
 - [ ] Add dependency information such as `requirements.txt` or `pyproject.toml`.
 - [ ] Verify that a fresh installation works from the documented instructions.
+- [ ] Document deviations from the spec's suggested structure: `words.py`, `tests/`, `.gitignore`, `render.yaml`, `.python-version`.
+- [ ] Confirm the repo contains everything the assignment lists: game engine and Flask server, HTML/CSS/JS frontend, word lists, original `Specification.md`, updated `TODO.md`, dependency and deployment configuration, tests, and README with local run instructions.
+- [ ] TODO.md checkmarks are up to date.
 
 ### Completion Criteria
 
-A new user can clone the project, install dependencies, start the server, play from the terminal or browser, and run a sample bot using only the documentation.
+A new user can clone the project, install dependencies, start the server, play from the terminal or browser using only the documentation. (Running a sample bot is optional.)
+
+---
+
+## Phase 15 — Deployment
+
+> **Assignment note:** The assignment requires deploying your own implementation, and the repository must contain the dependency and deployment configuration. Settings typed into Render's dashboard are not visible in the repo, so they live in `render.yaml`.
+
+### Tasks
+
+- [ ] Add `flask` and `gunicorn` to `requirements.txt`.
+- [ ] Add `.python-version` to pin the Python version used locally and on Render.
+- [ ] Add `render.yaml` (build: `pip install -r requirements.txt`; start: `gunicorn --bind 0.0.0.0:$PORT --workers 1 server:app`; free plan).
+- [ ] Deploy to Render from the GitHub repo.
+- [ ] Check the live URL: play a full game in the browser and run `curl` against `/api/games`.
+- [ ] Add the live URL to the README.
+
+### Completion Criteria
+
+Anyone can open the live URL and play a full game, and the deployment can be recreated from the files in the repository.
 
 ---
 
@@ -447,8 +480,8 @@ These should not be implemented until the core project is stable.
 
 Use this order unless there is a compelling reason to change it:
 
-1. Core Game Engine
-2. Word Management
+1. Core Game Engine and Word Management
+2. (Merged into Phase 1)
 3. REST Server
 4. Human Terminal Client
 5. Browser Client
@@ -461,5 +494,6 @@ Use this order unless there is a compelling reason to change it:
 12. Logging and Replay
 13. Full Testing
 14. Documentation and Packaging
+15. Deployment
 
 The project should remain runnable after every completed phase.
