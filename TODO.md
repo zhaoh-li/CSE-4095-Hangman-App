@@ -123,7 +123,7 @@ Merged into Phase 1 (see the assignment note there). Phase numbers after this ar
 - [x] Ensure the hidden word is never leaked during an active game.
 - [x] Limit stored games to 10,000 (oldest removed first), so a public server can't run out of memory. *(Added; not in the spec or assignment.)*
 - [x] Add API tests (`tests/test_server.py`), including a test that two games don't affect each other.
-- [ ] **Early deployment (from Phase 15):** once the API tests pass, complete Phase 15 and deploy to Render. See the note in Phase 15.
+- [x] **Early deployment (from Phase 15):** once the API tests pass, complete Phase 15 and deploy to Render. See the note in Phase 15.
 
 ### Completion Criteria
 
@@ -433,10 +433,10 @@ A new user can clone the project, install dependencies, start the server, play f
 - [x] Add `render.yaml` (build: `pip install -r requirements.txt`; start: `gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 4 server:app`; free plan).
 - [x] Add `GET /api/health` (returns `{"status": "ok"}`) for Render's health check. *(Added; not in the spec or assignment.)*
 - [x] Run the app locally with gunicorn using the same start command as Render.
-- [ ] Deploy to Render from the GitHub repo.
-- [ ] Check the live URL with `curl`: `/api/health`, then a full game through `/api/games`.
+- [x] Deploy to Render from the GitHub repo. Live at https://cse4095-hangman.onrender.com
+- [x] Check the live URL with `curl`: `/api/health`, then a full game through `/api/games`.
 - [ ] Check the live URL in the browser: play a full game. *(Waits for Phase 5, the web page.)*
-- [ ] Add the live URL to the README.
+- [x] Add the live URL to the README.
 
 ### Completion Criteria
 

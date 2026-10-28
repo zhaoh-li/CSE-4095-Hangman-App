@@ -4,7 +4,9 @@ A Hangman game with a Flask REST server and a browser client.
 
 > This README is a placeholder. Full documentation comes in Phase 14 (see `TODO.md`).
 
-**Live app:** _(added after the first Render deploy)_
+**Live app:** https://cse4095-hangman.onrender.com
+
+The free Render plan sleeps when idle, so the first request can take 30–60 seconds. Check it's awake with `curl -s https://cse4095-hangman.onrender.com/api/health`.
 
 ## Run locally
 
