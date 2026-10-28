@@ -428,11 +428,14 @@ A new user can clone the project, install dependencies, start the server, play f
 
 ### Tasks
 
-- [ ] Add `flask` and `gunicorn` to `requirements.txt`.
-- [ ] Add `.python-version` to pin the Python version used locally and on Render.
-- [ ] Add `render.yaml` (build: `pip install -r requirements.txt`; start: `gunicorn --bind 0.0.0.0:$PORT --workers 1 server:app`; free plan).
+- [x] Add `flask` and `gunicorn` to `requirements.txt`.
+- [x] Add `.python-version` to pin the Python version used locally and on Render.
+- [x] Add `render.yaml` (build: `pip install -r requirements.txt`; start: `gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 4 server:app`; free plan).
+- [x] Add `GET /api/health` (returns `{"status": "ok"}`) for Render's health check. *(Added; not in the spec or assignment.)*
+- [x] Run the app locally with gunicorn using the same start command as Render.
 - [ ] Deploy to Render from the GitHub repo.
-- [ ] Check the live URL: play a full game in the browser and run `curl` against `/api/games`.
+- [ ] Check the live URL with `curl`: `/api/health`, then a full game through `/api/games`.
+- [ ] Check the live URL in the browser: play a full game. *(Waits for Phase 5, the web page.)*
 - [ ] Add the live URL to the README.
 
 ### Completion Criteria

@@ -102,6 +102,11 @@ def create_app(word_manager=None, max_games=MAX_GAMES):
 
     # ----- Endpoints -----
 
+    @app.get("/api/health")
+    def health():
+        """Lets Render (and you) check that the server is running."""
+        return jsonify(status="ok")
+
     @app.post("/api/games")
     def create_game():
         data = read_json_object()

@@ -1,0 +1,15 @@
+# Render deployment configuration (Blueprint).
+# Render reads this file to create and update the web service.
+services:
+  - type: web
+    name: cse4095-hangman
+    runtime: python
+    plan: free
+    branch: main
+    autoDeploy: true
+    buildCommand: pip install -r requirements.txt
+    # One worker only: games are stored in memory, so a second worker
+    # would have its own separate games. Threads let it serve several
+    # requests at once (GameStore's lock keeps that safe).
+    startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 4 server:app
+    healthCheckPath: /api/health

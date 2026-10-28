@@ -266,6 +266,17 @@ class GameLimitTests(unittest.TestCase):
             self.assertEqual(client.get(f"/api/games/{game_id}").status_code, 200)
 
 
+class HealthTests(ServerTestCase):
+    def test_health_returns_ok(self):
+        response = self.client.get("/api/health")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get_json(), {"status": "ok"})
+
+    def test_health_does_not_create_games(self):
+        self.client.get("/api/health")
+        self.assertEqual(len(self.app.config["GAME_STORE"]), 0)
+
+
 class JsonErrorTests(ServerTestCase):
     def test_unknown_url_returns_json_404(self):
         response = self.client.get("/api/nothing-here")
