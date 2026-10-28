@@ -100,32 +100,34 @@ Merged into Phase 1 (see the assignment note there). Phase numbers after this ar
 
 ### Tasks
 
-- [ ] Create `server.py`.
-- [ ] Configure Flask (required by the assignment). Name the Flask object `app`.
-- [ ] Add in-memory storage for active games.
-- [ ] Keep each game's state separate (a guess in one game never affects another).
-- [ ] Generate unique game IDs.
-- [ ] Implement `POST /api/games`.
-- [ ] Implement `GET /api/games/{game_id}`.
-- [ ] Implement `POST /api/games/{game_id}/guess`.
-- [ ] Validate difficulty input.
-- [ ] Validate guess input.
-- [ ] Accept JSON request bodies and return JSON responses consistently.
-- [ ] Return appropriate HTTP status codes.
-- [ ] Handle unknown game IDs.
-- [ ] Handle malformed requests.
-- [ ] Match the spec's request and response JSON fields exactly:
+- [x] Create `server.py`.
+- [x] Configure Flask (required by the assignment). Name the Flask object `app`.
+- [x] Add in-memory storage for active games.
+- [x] Keep each game's state separate (a guess in one game never affects another).
+- [x] Generate unique game IDs.
+- [x] Implement `POST /api/games`.
+- [x] Implement `GET /api/games/{game_id}`.
+- [x] Implement `POST /api/games/{game_id}/guess`.
+- [x] Validate difficulty input.
+- [x] Validate guess input.
+- [x] Accept JSON request bodies and return JSON responses consistently.
+- [x] Return appropriate HTTP status codes.
+- [x] Handle unknown game IDs.
+- [x] Handle malformed requests.
+- [x] Match the spec's request and response JSON fields exactly:
   - Create request: `{"difficulty": "easy" | "medium" | "hard"}` (lowercase).
   - Guess request: `{"letter": "e"}`.
   - Responses include `pattern` (spaced, e.g. `_ e _ _ e`), `guessed_letters`, `incorrect_letters`, `remaining_guesses`, and `status`; create also returns `game_id`.
   - All three endpoints return the full game state (a superset of the spec's fields). The answer appears as `word` only after the game ends.
-- [ ] `python server.py` starts the server locally (debug off by default).
-- [ ] Ensure the hidden word is never leaked during an active game.
-- [ ] Add API tests (`tests/test_server.py`), including a test that two games don't affect each other.
+- [x] `python server.py` starts the server locally (debug off by default).
+- [x] Ensure the hidden word is never leaked during an active game.
+- [x] Limit stored games to 10,000 (oldest removed first), so a public server can't run out of memory. *(Added; not in the spec or assignment.)*
+- [x] Add API tests (`tests/test_server.py`), including a test that two games don't affect each other.
+- [ ] **Early deployment (from Phase 15):** once the API tests pass, complete Phase 15 and deploy to Render. See the note in Phase 15.
 
 ### Completion Criteria
 
-A complete Hangman game can be played using only `curl` or another HTTP client.
+A complete Hangman game can be played using only `curl` or another HTTP client, both locally and at the live Render URL.
 
 The browser and terminal clients are not required for this phase.
 
@@ -420,6 +422,8 @@ A new user can clone the project, install dependencies, start the server, play f
 
 ## Phase 15 — Deployment
 
+> **Done early:** This phase is completed at the end of Phase 3, not after Phase 14, so deployment problems show up while there is little code. Until Phase 5, the live URL serves only the API (`/` returns "Not Found"). Later phases deploy automatically on each `git push` to `main`.
+
 > **Assignment note:** The assignment requires deploying your own implementation, and the repository must contain the dependency and deployment configuration. Settings typed into Render's dashboard are not visible in the repo, so they live in `render.yaml`.
 
 ### Tasks
@@ -482,7 +486,7 @@ Use this order unless there is a compelling reason to change it:
 
 1. Core Game Engine and Word Management
 2. (Merged into Phase 1)
-3. REST Server
+3. REST Server, then Phase 15 (Deployment) early
 4. Human Terminal Client
 5. Browser Client
 6. Reference Automated Clients
@@ -494,6 +498,6 @@ Use this order unless there is a compelling reason to change it:
 12. Logging and Replay
 13. Full Testing
 14. Documentation and Packaging
-15. Deployment
+15. Deployment (done early, at the end of Phase 3)
 
 The project should remain runnable after every completed phase.
