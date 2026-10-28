@@ -27,6 +27,20 @@ curl -s -X POST localhost:5000/api/games/GAME_ID/guess -H "Content-Type: applica
 curl -s localhost:5000/api/games/GAME_ID
 ```
 
+## Terminal client
+
+Play Hangman in the terminal. It talks to the server over HTTP, like `curl`.
+
+```bash
+# Against a local server (start `python server.py` in another terminal first)
+python terminal_client.py
+
+# Against the live site (no local server needed)
+python terminal_client.py --url https://cse4095-hangman.onrender.com
+```
+
+Type `quit` (or press Ctrl+C) to leave.
+
 ## Run the tests
 
 ```bash

@@ -137,20 +137,20 @@ The browser and terminal clients are not required for this phase.
 
 ### Tasks
 
-- [ ] Create `terminal_client.py`.
-- [ ] Connect to the Hangman server over HTTP.
-- [ ] Let the user choose Easy, Medium, or Hard.
-- [ ] Start a new game through the REST API.
-- [ ] Display the pattern (masked word).
-- [ ] Display guessed letters.
-- [ ] Display incorrect letters.
-- [ ] Display remaining incorrect guesses.
-- [ ] Prompt for one letter at a time.
-- [ ] Submit guesses through the REST API.
-- [ ] Handle invalid input locally when appropriate.
-- [ ] Handle server errors gracefully.
-- [ ] Display win and loss messages.
-- [ ] Allow the user to start another game.
+- [x] Create `terminal_client.py`.
+- [x] Connect to the Hangman server over HTTP.
+- [x] Let the user choose Easy, Medium, or Hard.
+- [x] Start a new game through the REST API.
+- [x] Display the pattern (masked word).
+- [x] Display guessed letters.
+- [x] Display incorrect letters.
+- [x] Display remaining incorrect guesses.
+- [x] Prompt for one letter at a time.
+- [x] Submit guesses through the REST API.
+- [x] Handle invalid input locally when appropriate.
+- [x] Handle server errors gracefully.
+- [x] Display win and loss messages.
+- [x] Allow the user to start another game.
 
 ### Completion Criteria
 
