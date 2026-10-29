@@ -19,7 +19,9 @@ pip install -r requirements.txt
 python server.py
 ```
 
-The server runs at `http://localhost:5000`. The web page arrives in Phase 5. Until then, use the API:
+Open **http://localhost:5000** in your browser to play. Click letters or type them on your keyboard; press Enter for a new game when one ends.
+
+You can also use the API directly:
 
 ```bash
 curl -s -X POST localhost:5000/api/games -H "Content-Type: application/json" -d '{"difficulty":"easy"}'

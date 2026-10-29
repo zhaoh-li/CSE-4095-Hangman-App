@@ -12,7 +12,7 @@ import secrets
 import threading
 from collections import OrderedDict
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from werkzeug.exceptions import HTTPException, MethodNotAllowed
 
 from game import DuplicateGuessError, GameOverError, HangmanGame, InvalidGuessError
@@ -21,6 +21,20 @@ from words import InvalidDifficultyError, WordManager
 # The server is public, so cap how many games are kept in memory.
 # When the cap is reached, the oldest game is removed.
 MAX_GAMES = 10_000
+
+# Sent with every response. They tell browsers to load scripts and styles
+# only from this site, not to guess file types, not to let other sites
+# embed the page, and not to share full URLs with other sites.
+SECURITY_HEADERS = {
+    "Content-Security-Policy": (
+        "default-src 'self'; script-src 'self'; style-src 'self'; "
+        "img-src 'self' data:; connect-src 'self'; object-src 'none'; "
+        "base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
+    ),
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+    "Referrer-Policy": "same-origin",
+}
 
 
 class GameStore:
@@ -99,6 +113,19 @@ def create_app(word_manager=None, max_games=MAX_GAMES):
         if game is None:
             raise ApiError("Game not found.", 404)
         return game
+
+    @app.after_request
+    def add_security_headers(response):
+        for name, value in SECURITY_HEADERS.items():
+            response.headers.setdefault(name, value)
+        return response
+
+    # ----- Web page -----
+
+    @app.get("/")
+    def index():
+        """The browser client. Flask serves /static/style.css and /static/app.js itself."""
+        return send_from_directory(app.static_folder, "index.html")
 
     # ----- Endpoints -----
 

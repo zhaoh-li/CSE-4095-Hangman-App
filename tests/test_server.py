@@ -324,3 +324,155 @@ class RealWordListTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+# ---------------------------------------------------------------------------
+# Phase 5: the web page and security headers
+# ---------------------------------------------------------------------------
+
+import re
+import shutil
+import subprocess
+from pathlib import Path
+
+from server import SECURITY_HEADERS
+from words import WordManager
+
+STATIC = Path(__file__).resolve().parent.parent / "static"
+
+
+class WebPageTests(ServerTestCase):
+    def test_home_page_is_served(self):
+        response = self.client.get("/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.mimetype, "text/html")
+        html = response.get_data(as_text=True)
+        response.close()
+        for needed in ['id="keyboard"', 'id="pattern"', 'id="hangman"', 'id="new-game"',
+                       'id="message"', 'id="remaining"', 'id="guessed"', 'id="wrong"',
+                       'value="easy"', 'value="medium"', 'value="hard"',
+                       "/static/app.js", "/static/style.css"]:
+            with self.subTest(needed=needed):
+                self.assertIn(needed, html)
+
+    def test_drawing_has_six_parts(self):
+        response = self.client.get("/")
+        html = response.get_data(as_text=True)
+        response.close()
+        parts = re.findall(r'class="part" data-part="(\d)"', html)
+        self.assertEqual(parts, ["1", "2", "3", "4", "5", "6"])
+
+    def test_static_files_are_served_with_right_types(self):
+        for path, mimetype in [("/static/app.js", "text/javascript"),
+                               ("/static/style.css", "text/css")]:
+            with self.subTest(path=path):
+                response = self.client.get(path)
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.mimetype, mimetype)
+                self.assertGreater(len(response.get_data()), 100)
+                response.close()
+
+    def test_page_uses_fetch_and_only_the_api(self):
+        js = (STATIC / "app.js").read_text(encoding="utf-8")
+        self.assertIn("fetch(", js)
+        self.assertIn("/api/games", js)
+        self.assertNotIn("innerHTML", js)  # text is always set with textContent
+
+    def test_every_element_app_js_uses_exists_in_the_page(self):
+        js = (STATIC / "app.js").read_text(encoding="utf-8")
+        html = (STATIC / "index.html").read_text(encoding="utf-8")
+        ids = re.findall(r'getElementById\("([^"]+)"\)', js)
+        self.assertGreater(len(ids), 5)
+        for element_id in ids:
+            with self.subTest(id=element_id):
+                self.assertIn(f'id="{element_id}"', html)
+
+    def test_no_inline_scripts_or_styles(self):
+        """Needed for the Content-Security-Policy to allow the page."""
+        html = (STATIC / "index.html").read_text(encoding="utf-8")
+        self.assertNotRegex(html, r"<script(?![^>]*\bsrc=)")
+        self.assertNotIn("<style", html)
+        self.assertNotIn("style=", html)
+        self.assertNotRegex(html, r"\son[a-z]+=")  # no onclick= etc.
+
+
+class NoWordListInBrowserTests(unittest.TestCase):
+    """The browser must not contain the game's words or a way to load them."""
+
+    def test_static_files_never_load_word_lists(self):
+        for path in STATIC.iterdir():
+            text = path.read_text(encoding="utf-8")
+            with self.subTest(file=path.name):
+                self.assertNotIn("words/", text)
+                self.assertNotIn(".txt", text)
+
+    def test_static_files_do_not_embed_a_word_list(self):
+        # Ordinary words like "letter" or "message" are fine. A copied word
+        # list would put hundreds of list words into the file.
+        manager = WordManager()
+        all_words = {w for level in ("easy", "medium", "hard") for w in manager.words(level)}
+        for path in STATIC.iterdir():
+            text = path.read_text(encoding="utf-8").lower()
+            found = set(re.findall(r"[a-z]+", text)) & all_words
+            with self.subTest(file=path.name):
+                self.assertLess(len(found), 40, sorted(found))
+
+    def test_page_does_not_contain_the_hidden_word(self):
+        app = create_app(word_manager=FixedWords("zymurgy"))
+        client = app.test_client()
+        client.post("/api/games", json={"difficulty": "hard"})
+        for path in ["/", "/static/app.js", "/static/style.css"]:
+            response = client.get(path)
+            with self.subTest(path=path):
+                self.assertNotIn("zymurgy", response.get_data(as_text=True))
+            response.close()
+
+
+class SecurityHeaderTests(ServerTestCase):
+    def assert_security_headers(self, response):
+        for name, value in SECURITY_HEADERS.items():
+            self.assertEqual(response.headers.get(name), value, name)
+
+    def test_headers_on_page_api_static_and_errors(self):
+        game_id = self.new_game()["game_id"]
+        requests = [
+            ("get", "/"),
+            ("get", "/static/app.js"),
+            ("get", "/api/health"),
+            ("get", f"/api/games/{game_id}"),
+            ("get", "/api/games/nope"),       # 404
+            ("get", "/nothing-here"),         # 404 from Flask
+            ("delete", "/api/games"),         # 405
+        ]
+        for method, url in requests:
+            with self.subTest(method=method, url=url):
+                response = getattr(self.client, method)(url)
+                self.assert_security_headers(response)
+                response.close()
+
+    def test_headers_on_server_error(self):
+        class BrokenWords:
+            def random_word(self, difficulty):
+                raise RuntimeError("boom")
+
+        app = create_app(word_manager=BrokenWords())
+        app.logger.disabled = True
+        response = app.test_client().post("/api/games", json={"difficulty": "easy"})
+        self.assertEqual(response.status_code, 500)
+        self.assert_security_headers(response)
+
+    def test_csp_only_allows_this_site(self):
+        csp = SECURITY_HEADERS["Content-Security-Policy"]
+        self.assertIn("script-src 'self'", csp)
+        self.assertIn("connect-src 'self'", csp)
+        self.assertIn("frame-ancestors 'none'", csp)
+        self.assertNotIn("unsafe-inline", csp)
+        self.assertNotIn("unsafe-eval", csp)
+
+
+@unittest.skipUnless(shutil.which("node"), "Node.js not installed")
+class JavaScriptSyntaxTests(unittest.TestCase):
+    def test_app_js_has_valid_syntax(self):
+        result = subprocess.run(["node", "--check", str(STATIC / "app.js")],
+                                capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stderr)

@@ -166,28 +166,29 @@ The terminal client contains no Hangman game logic beyond presentation and input
 
 ### Tasks
 
-- [ ] Create `static/index.html`.
-- [ ] Create `static/style.css`.
-- [ ] Create `static/app.js`.
-- [ ] Serve `static/index.html` from Flask at `/`.
-- [ ] Add a difficulty selector.
-- [ ] Add a New Game button.
-- [ ] Display the pattern (masked word).
-- [ ] Display guessed letters.
-- [ ] Display incorrect letters.
-- [ ] Display remaining incorrect guesses.
-- [ ] Add an on-screen alphabet keyboard.
-- [ ] Accept guesses from the physical keyboard (letter keys only; ignore other keys, already-guessed letters, and all keys once the game is over).
-- [ ] Disable already-guessed letters.
-- [ ] Use `fetch()` to communicate with the REST API.
-- [ ] The browser contains no game logic. It only sends guesses and displays the server's response. Flask decides whether a guess is correct and whether the game is won or lost.
-- [ ] Draw the Hangman state visually (SVG or HTML elements).
-- [ ] Update the drawing after incorrect guesses.
-- [ ] Display win and loss messages.
-- [ ] Show the word when the game ends.
-- [ ] Show a clear message when the server can't be reached or returns an error.
-- [ ] Start another game without reloading the page.
-- [ ] Make the interface usable on common desktop and mobile browser sizes.
+- [x] Create `static/index.html`.
+- [x] Create `static/style.css`.
+- [x] Create `static/app.js`.
+- [x] Serve `static/index.html` from Flask at `/`.
+- [x] Add a difficulty selector.
+- [x] Add a New Game button.
+- [x] Display the pattern (masked word).
+- [x] Display guessed letters.
+- [x] Display incorrect letters.
+- [x] Display remaining incorrect guesses.
+- [x] Add an on-screen alphabet keyboard.
+- [x] Accept guesses from the physical keyboard (letter keys only; ignore other keys, already-guessed letters, and all keys once the game is over).
+- [x] Disable already-guessed letters.
+- [x] Use `fetch()` to communicate with the REST API.
+- [x] The browser contains no game logic. It only sends guesses and displays the server's response. Flask decides whether a guess is correct and whether the game is won or lost.
+- [x] Draw the Hangman state visually (SVG or HTML elements).
+- [x] Update the drawing after incorrect guesses.
+- [x] Display win and loss messages.
+- [x] Show the word when the game ends.
+- [x] Show a clear message when the server can't be reached or returns an error.
+- [x] Start another game without reloading the page.
+- [x] Make the interface usable on common desktop and mobile browser sizes.
+- [x] Send security headers on every response (Content-Security-Policy, X-Content-Type-Options, X-Frame-Options, Referrer-Policy). *(Added; not in the spec or assignment.)*
 
 ### Completion Criteria
 

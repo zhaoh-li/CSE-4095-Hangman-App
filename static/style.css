@@ -1,0 +1,442 @@
+/* ----- Colors: pool-table green boards on a "morning sky" page ----- */
+/* Every text color keeps at least 4.5:1 contrast with its background. */
+
+:root {
+  /* Page (outside the boards) */
+  --page-bg: linear-gradient(160deg, #d3e4fa 0%, #c9d5f3 50%, #d6caef 100%);
+  --page-solid: #c9d5f3;  /* fallback if gradients aren't supported */
+  --page-text: #1d2a44;   /* navy: text outside the boards */
+  --title-text: #1d2a44;  /* navy "Hangman" title */
+  --page-muted: #3c4a66;
+  --control-bg: #ffffff;
+  --control-border: #a9bbdc;
+  --focus: #1f5fcf;       /* keyboard focus ring on the page */
+
+  /* Boards (pool-table felt green with wooden rails) */
+  --panel: #2b7535;       /* felt green */
+  --text: #f7f5ee;        /* chalk white */
+  --muted: #e0f0d8;       /* faded chalk */
+  --border: #4f9a55;      /* felt edge */
+  --frame: #6b4a2f;       /* wooden rail */
+  --accent: #f5c84f;      /* chalk yellow */
+  --accent-text: #1d2a44;
+  --good: #d6ffb0;        /* light lime */
+  --good-bg: #1c5424;     /* dark felt */
+  --bad: #ffe0d8;         /* light coral, readable on the felt */
+  --bad-bg: #6e3534;      /* burgundy */
+  --info-bg: #256a2f;
+  --key-bg: #256a2f;      /* keys are slightly darker felt */
+  --key-hover: #2d7838;
+  --line: #f7f5ee;        /* drawing lines */
+  --outlined-text: #ffffff;      /* key letters and stat values */
+  --text-outline: 1px #ffffff;   /* their outline */
+  --radius: 10px;
+  color-scheme: light;
+}
+
+/* ----- Base ----- */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--page-solid);  /* fallback if gradients aren't supported */
+  background: var(--page-bg);
+  background-attachment: fixed;
+  color: var(--page-text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.5;
+}
+
+.app {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 24px 16px 40px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+button:focus-visible,
+.difficulty input:focus-visible + span {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Inside the green boards, a chalk-yellow focus ring shows up better. */
+.keyboard .key:focus-visible {
+  outline-color: var(--accent);
+}
+
+/* ----- Header and controls ----- */
+
+.top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  margin-bottom: 20px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 2rem;
+  letter-spacing: 0.04em;
+  color: var(--title-text);
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.difficulty {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--control-bg);
+  color: var(--page-text);
+  box-shadow: 0 1px 3px rgba(34, 48, 74, 0.12);
+}
+
+.difficulty label {
+  position: relative;
+}
+
+.difficulty input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.difficulty span {
+  display: block;
+  min-height: 44px;
+  padding: 10px 16px;
+  cursor: pointer;
+}
+
+.difficulty label + label span {
+  border-left: 1px solid var(--control-border);
+}
+
+.difficulty input:not(:checked) + span:hover {
+  background: #f1f6ff;
+}
+
+.difficulty input:checked + span {
+  background: var(--accent);
+  color: var(--accent-text);
+  font-weight: 600;
+}
+
+.primary {
+  min-height: 44px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: var(--accent-text);
+  font-weight: 600;
+  box-shadow: 0 2px 0 #c99a2e, 0 2px 6px rgba(34, 48, 74, 0.18);
+}
+
+.primary:hover {
+  filter: brightness(1.08);
+}
+
+/* ----- Board: drawing + word ----- */
+
+.board {
+  color: var(--text);     /* boards never inherit the page text color */
+  display: grid;
+  grid-template-columns: minmax(160px, 240px) 1fr;
+  align-items: center;
+  gap: 24px;
+  padding: 20px;
+  background: var(--panel);
+  border: 8px solid var(--frame);
+  border-radius: var(--radius);
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.35), 0 8px 24px rgba(34, 48, 74, 0.22);
+}
+
+.hangman {
+  width: 100%;
+  height: auto;
+}
+
+.hangman line,
+.hangman circle {
+  stroke: var(--line);
+  stroke-width: 6;
+  stroke-linecap: round;
+  fill: none;
+}
+
+.hangman .part {
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.hangman .part.shown {
+  opacity: 1;
+}
+
+.board.lost .hangman .part {
+  stroke: var(--bad);
+}
+
+.board.won .hangman .gallows line {
+  stroke: var(--good);
+}
+
+.pattern {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 3.2rem;
+  margin: 0 0 16px;
+}
+
+.pattern .letter {
+  display: inline-flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 2.6rem;
+  height: 3.4rem;
+  border-bottom: 4px solid var(--text);
+  font-size: 2.4rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  line-height: 1;
+  padding-bottom: 4px;
+}
+
+.pattern .letter.missed {
+  color: var(--bad);
+  border-bottom-color: var(--bad);
+}
+
+.board.won .pattern .letter {
+  color: var(--good);
+  border-bottom-color: var(--good);
+}
+
+.stats {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.stats div {
+  display: flex;
+  gap: 8px;
+}
+
+.stats dt {
+  min-width: 6.5rem;
+  color: var(--muted);
+}
+
+.stats dd {
+  margin: 0;
+  color: var(--outlined-text);
+  -webkit-text-stroke: var(--text-outline);
+  paint-order: stroke fill;  /* draw the outline behind the letter so it doesn't look thinner */
+  font-weight: 600;
+  text-transform: uppercase;
+  word-break: break-word;
+}
+
+/* ----- Message ----- */
+
+.message {
+  min-height: 3rem;
+  margin: 16px 0;
+  padding: 12px 16px;
+  font-size: 1.1rem;
+  color: var(--text);
+  border-radius: var(--radius);
+  font-weight: 600;
+  text-align: center;
+}
+
+.message:empty {
+  visibility: hidden;
+}
+
+.message--info {
+  background: var(--info-bg);
+}
+
+.message--good,
+.message--win {
+  background: var(--good-bg);
+  color: var(--good);
+}
+
+.message--bad,
+.message--lose,
+.message--error {
+  background: var(--bad-bg);
+  color: var(--bad);
+}
+
+.message--win,
+.message--lose {
+  font-size: 1.2rem;
+}
+
+/* ----- Keyboard ----- */
+
+.keyboard {
+  color: var(--text);
+  display: grid;
+  grid-template-columns: repeat(13, 1fr);
+  gap: 6px;
+  padding: 16px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 6px 18px rgba(34, 48, 74, 0.2);
+}
+
+.key {
+  min-height: 48px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--key-bg);
+  font-size: 1.3rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--outlined-text);
+  -webkit-text-stroke: var(--text-outline);
+  paint-order: stroke fill;
+}
+
+.key:hover:not(:disabled) {
+  background: var(--key-hover);
+}
+
+.key:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+.key.correct {
+  background: var(--good-bg);
+  border-color: var(--good);
+  color: var(--outlined-text);
+  opacity: 1;
+}
+
+.key.wrong {
+  background: var(--bad-bg);
+  border-color: var(--bad);
+  color: var(--outlined-text);
+  opacity: 1;
+}
+
+.hint {
+  margin: 16px 0 0;
+  color: var(--page-muted);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* While a request is in flight */
+.app.busy .keyboard,
+.app.busy .primary {
+  cursor: progress;
+}
+
+/* ----- Small screens (phones) ----- */
+
+@media (max-width: 640px) {
+  .app {
+    padding-top: 16px;
+  }
+
+  h1 {
+    font-size: 1.6rem;
+  }
+
+  .top,
+  .controls {
+    width: 100%;
+  }
+
+  .difficulty {
+    flex: 1;
+  }
+
+  .difficulty label {
+    flex: 1;
+    text-align: center;
+  }
+
+  .difficulty span {
+    padding: 10px 8px;
+  }
+
+  .board {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .hangman {
+    max-width: 170px;
+  }
+
+  .info {
+    width: 100%;
+  }
+
+  .pattern {
+    justify-content: center;
+    gap: 4px;
+  }
+
+  .pattern .letter {
+    width: 1.45rem;
+    height: 2.2rem;
+    font-size: 1.35rem;
+    border-bottom-width: 3px;
+  }
+
+  .keyboard {
+    grid-template-columns: repeat(7, 1fr);
+    padding: 12px;
+  }
+
+  .key {
+    min-height: 46px;
+  }
+}
