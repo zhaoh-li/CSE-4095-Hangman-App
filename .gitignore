@@ -13,3 +13,7 @@ venv/
 # Editors / OS
 .vscode/
 .DS_Store
+
+# Test coverage reports
+.coverage
+htmlcov/

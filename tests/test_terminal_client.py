@@ -277,6 +277,82 @@ class ServerProblemTests(LiveServerTestCase):
             thread.join(timeout=5)
 
 
+class ServerRejectsGuessTests(LiveServerTestCase):
+    """The server can still reject a guess that passed the client's local checks."""
+
+    def run_with_guess_failure(self, error, inputs):
+        real_guess = self.client.guess
+        calls = {"n": 0}
+
+        def guess_once_fails(game_id, letter):
+            calls["n"] += 1
+            if calls["n"] == 1:
+                raise error
+            return real_guess(game_id, letter)
+
+        self.client.guess = guess_once_fails
+        return self.run_ui(inputs)
+
+    def test_409_shows_server_message_and_keeps_playing(self):
+        code, text = self.run_with_guess_failure(
+            ApiError(409, "The letter 'z' was already guessed."), ["1", "z", "a", "quit"])
+        self.assertIn("The letter 'z' was already guessed.", text)
+        self.assertIn("Yes! 'a' is in the word.", text)
+
+    def test_400_shows_server_message_and_keeps_playing(self):
+        code, text = self.run_with_guess_failure(
+            ApiError(400, "A guess must be a single letter a-z."), ["1", "z", "a", "quit"])
+        self.assertIn("A guess must be a single letter a-z.", text)
+        self.assertIn("Yes! 'a' is in the word.", text)
+
+    def test_500_on_guess_offers_a_new_game(self):
+        code, text = self.run_with_guess_failure(
+            ApiError(500, "Internal server error."), ["1", "a", "n"])
+        self.assertIn("Server error. Let's start a new game.", text)
+        self.assertIn("Thanks for playing!", text)
+
+    def test_quit_at_play_again(self):
+        code, text = self.run_ui(["1", "a", "p", "l", "e", "quit"])
+        self.assertEqual(code, 0)
+        self.assertIn("Thanks for playing!", text)
+
+
+class OddServerResponseTests(unittest.TestCase):
+    """Servers that answer, but not with the JSON the client expects."""
+
+    def serve(self, status, body, content_type="text/html"):
+        def wsgi_app(environ, start_response):
+            start_response(status, [("Content-Type", content_type)])
+            return [body.encode()]
+
+        server = make_server("127.0.0.1", 0, wsgi_app, threaded=True)
+        thread = threading.Thread(target=server.serve_forever, kwargs={"poll_interval": 0.05}, daemon=True)
+        thread.start()
+        self.addCleanup(thread.join, 5)
+        self.addCleanup(server.shutdown)
+        return HangmanClient(f"http://127.0.0.1:{server.port}", timeout=5)
+
+    def test_non_json_success_response(self):
+        client = self.serve("200 OK", "<html>hello</html>")
+        with self.assertRaises(ServerUnavailableError) as caught:
+            client.health()
+        self.assertIn("not like a Hangman server", str(caught.exception))
+
+    def test_error_page_that_is_not_json(self):
+        client = self.serve("404 NOT FOUND", "<h1>Not Found</h1>")
+        with self.assertRaises(ApiError) as caught:
+            client.get_game("abc")
+        self.assertEqual(caught.exception.status, 404)
+        self.assertEqual(caught.exception.message, "NOT FOUND")
+
+    def test_json_error_without_error_field(self):
+        client = self.serve("500 INTERNAL SERVER ERROR", '{"oops": true}', "application/json")
+        with self.assertRaises(ApiError) as caught:
+            client.health()
+        self.assertEqual(caught.exception.status, 500)
+        self.assertEqual(caught.exception.message, "INTERNAL SERVER ERROR")
+
+
 class DrawingTests(unittest.TestCase):
     def test_stages(self):
         self.assertEqual(len(HANGMAN_STAGES), 7)

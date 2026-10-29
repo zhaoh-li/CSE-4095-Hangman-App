@@ -368,23 +368,23 @@ An instructor can inspect or replay a completed game step by step for debugging 
 
 ### Tasks
 
-- [ ] Complete unit tests for `HangmanGame`.
-- [ ] Complete tests for word loading.
-- [ ] Complete REST API tests.
-- [ ] Test duplicate guesses.
-- [ ] Test invalid letters.
-- [ ] Test invalid difficulty.
-- [ ] Test missing game IDs.
-- [ ] Test win paths.
-- [ ] Test loss paths.
-- [ ] Test answer disclosure rules.
-- [ ] Test terminal-client integration.
-- [ ] Test browser-client integration.
+- [x] Complete unit tests for `HangmanGame`.
+- [x] Complete tests for word loading.
+- [x] Complete REST API tests.
+- [x] Test duplicate guesses.
+- [x] Test invalid letters.
+- [x] Test invalid difficulty.
+- [x] Test missing game IDs.
+- [x] Test win paths.
+- [x] Test loss paths.
+- [x] Test answer disclosure rules.
+- [x] Test terminal-client integration.
+- [x] Test browser-client integration.
 - [O] Test automated bots.
 - [O] Test evaluation sessions.
 - [O] Test scoring.
 - [O] Test leaderboard ordering.
-- [ ] Add an end-to-end automated test.
+- [x] Add an end-to-end automated test.
 
 ### Completion Criteria
 

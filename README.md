@@ -50,6 +50,31 @@ source .venv/bin/activate
 python -m unittest discover -s tests
 ```
 
+This runs everything (about 12 seconds):
+
+| File | What it tests |
+|---|---|
+| `tests/test_words.py` | Loading and checking the word lists |
+| `tests/test_game.py` | The game rules (`HangmanGame`) |
+| `tests/test_server.py` | The REST API, the web page, security headers, many requests at once |
+| `tests/test_terminal_client.py` | The terminal client against a real HTTP server |
+| `tests/test_browser_client.py` | The browser code (`static/app.js`), run in Node with a small fake page against a real server. Skipped if Node.js isn't installed. |
+| `tests/test_end_to_end.py` | Starts the app with gunicorn exactly like Render (and with `python server.py`), then plays through the API, the terminal client, and the browser code |
+
+**Test the deployed site** (skipped unless you set the URL):
+
+```bash
+HANGMAN_LIVE_URL=https://cse4095-hangman.onrender.com python -m unittest tests.test_end_to_end
+```
+
+**Coverage report** (optional; `coverage` is a test-only tool, not in `requirements.txt`):
+
+```bash
+pip install coverage
+python -m coverage run --branch --source=. --omit="tests/*,.venv/*" -m unittest discover -s tests
+python -m coverage report -m
+```
+
 ## Deployment
 
 Deployed on Render using `render.yaml` (build and start commands) and `.python-version`.

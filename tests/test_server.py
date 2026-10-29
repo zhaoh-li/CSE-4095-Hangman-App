@@ -277,6 +277,114 @@ class HealthTests(ServerTestCase):
         self.assertEqual(len(self.app.config["GAME_STORE"]), 0)
 
 
+class EdgeCaseTests(ServerTestCase):
+    def test_uppercase_repeat_is_a_duplicate(self):
+        game_id = self.new_game()["game_id"]
+        self.guess(game_id, "e")
+        response = self.guess(game_id, "E")
+        self.assertEqual(response.status_code, 409)
+
+    def test_finished_game_removed_by_limit_returns_404(self):
+        app = create_app(word_manager=FixedWords("cat"), max_games=1)
+        client = app.test_client()
+        old = client.post("/api/games", json={"difficulty": "easy"}).get_json()["game_id"]
+        for letter in "cat":
+            client.post(f"/api/games/{old}/guess", json={"letter": letter})
+        client.post("/api/games", json={"difficulty": "easy"})  # pushes the old game out
+        self.assertEqual(client.get(f"/api/games/{old}").status_code, 404)
+        self.assertEqual(client.post(f"/api/games/{old}/guess", json={"letter": "z"}).status_code, 404)
+
+    def test_repeated_random_id_is_replaced(self):
+        from unittest import mock
+        import server
+
+        store = server.GameStore()
+        with mock.patch.object(server.secrets, "token_hex",
+                               side_effect=["aaaa", "aaaa", "bbbb"]):
+            first = store.add(object())
+            second = store.add(object())
+        self.assertEqual((first, second), ("aaaa", "bbbb"))
+        self.assertEqual(len(store), 2)
+
+
+class ConcurrencyTests(unittest.TestCase):
+    """Many requests at the same time must not lose or double-count guesses."""
+
+    def test_simultaneous_guesses_on_one_game(self):
+        import threading
+        from werkzeug.serving import make_server
+        import urllib.request
+
+        word = "abcdefghijklmnopqrstuvwxyz"  # every guess is correct, so the game never ends early
+        app = create_app(word_manager=FixedWords(word))
+        server = make_server("127.0.0.1", 0, app, threaded=True)
+        thread = threading.Thread(target=server.serve_forever, kwargs={"poll_interval": 0.05}, daemon=True)
+        thread.start()
+        base = f"http://127.0.0.1:{server.port}"
+
+        def post(path, body):
+            request = urllib.request.Request(base + path, data=json.dumps(body).encode(),
+                                             headers={"Content-Type": "application/json"}, method="POST")
+            try:
+                with urllib.request.urlopen(request, timeout=10) as response:
+                    return response.status
+            except urllib.error.HTTPError as error:
+                error.close()
+                return error.code
+
+        try:
+            game_id = json.loads(urllib.request.urlopen(urllib.request.Request(
+                base + "/api/games", data=b'{"difficulty":"easy"}',
+                headers={"Content-Type": "application/json"}, method="POST"), timeout=10).read())["game_id"]
+
+            # 26 letters, each sent twice at the same moment: one of each pair must win, one must be a duplicate.
+            letters = list(word) * 2
+            results = [None] * len(letters)
+            start = threading.Barrier(len(letters))
+
+            def worker(i, letter):
+                start.wait()
+                results[i] = post(f"/api/games/{game_id}/guess", {"letter": letter})
+
+            workers = [threading.Thread(target=worker, args=(i, l)) for i, l in enumerate(letters)]
+            for w in workers:
+                w.start()
+            for w in workers:
+                w.join(timeout=20)
+
+            self.assertEqual(results.count(200), 26)
+            self.assertEqual(results.count(409), 26)
+            state = app.config["GAME_STORE"].get(game_id).to_dict()
+            self.assertEqual(sorted(state["guessed_letters"]), list(word))
+            self.assertEqual(state["status"], "won")
+        finally:
+            server.shutdown()
+            thread.join(timeout=5)
+
+    def test_simultaneous_new_games_get_unique_ids(self):
+        import threading
+
+        app = create_app(word_manager=FixedWords("apple"))
+        ids = []
+        lock = threading.Lock()
+
+        def make_games():
+            client = app.test_client()
+            for _ in range(20):
+                game_id = client.post("/api/games", json={"difficulty": "easy"}).get_json()["game_id"]
+                with lock:
+                    ids.append(game_id)
+
+        threads = [threading.Thread(target=make_games) for _ in range(10)]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join(timeout=20)
+        self.assertEqual(len(ids), 200)
+        self.assertEqual(len(set(ids)), 200)
+        self.assertEqual(len(app.config["GAME_STORE"]), 200)
+
+
 class JsonErrorTests(ServerTestCase):
     def test_unknown_url_returns_json_404(self):
         response = self.client.get("/api/nothing-here")

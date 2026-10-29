@@ -38,6 +38,12 @@ class NewGameTests(unittest.TestCase):
         game = play(HangmanGame("Apple"), "a")
         self.assertEqual(game.pattern, "a _ _ _ _")
 
+    def test_rejects_max_incorrect_below_one(self):
+        for bad in [0, -1]:
+            with self.subTest(bad=bad):
+                with self.assertRaises(ValueError):
+                    HangmanGame("apple", max_incorrect=bad)
+
     def test_rejects_bad_words(self):
         for bad in ["", "  ", "abc1", "don't", None]:
             with self.subTest(bad=bad):
