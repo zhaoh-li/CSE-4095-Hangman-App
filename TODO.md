@@ -398,22 +398,22 @@ The major user flows and failure cases are covered by automated tests.
 
 ### Tasks
 
-- [ ] Create or update `README.md`.
-- [ ] README: step-by-step local setup (virtual environment, `pip install -r requirements.txt`, `python server.py`, open `http://localhost:5000`, run the tests).
-- [ ] Document how to start the server.
-- [ ] Document how to use the browser client.
-- [ ] Document how to use the terminal client.
-- [ ] Document the REST API.
+- [x] Create or update `README.md`.
+- [x] README: step-by-step local setup (virtual environment, `pip install -r requirements.txt`, `python server.py`, open `http://localhost:5000`, run the tests).
+- [x] Document how to start the server.
+- [x] Document how to use the browser client.
+- [x] Document how to use the terminal client.
+- [x] Document the REST API.
 - [O] Document how to write a student bot.
-- [ ] Provide example requests and responses.
+- [x] Provide example requests and responses.
 - [O] Document scoring.
 - [O] Document evaluation rules.
 - [O] Document leaderboard behavior.
-- [ ] Add dependency information such as `requirements.txt` or `pyproject.toml`.
-- [ ] Verify that a fresh installation works from the documented instructions.
-- [ ] Document deviations from the spec's suggested structure: `words.py`, `tests/`, `.gitignore`, `render.yaml`, `.python-version`.
-- [ ] Confirm the repo contains everything the assignment lists: game engine and Flask server, HTML/CSS/JS frontend, word lists, original `Specification.md`, updated `TODO.md`, dependency and deployment configuration, tests, and README with local run instructions.
-- [ ] TODO.md checkmarks are up to date.
+- [x] Add dependency information such as `requirements.txt` or `pyproject.toml`.
+- [x] Verify that a fresh installation works from the documented instructions.
+- [x] Document deviations from the spec's suggested structure: `words.py`, `tests/`, `.gitignore`, `render.yaml`, `.python-version`.
+- [x] Confirm the repo contains everything the assignment lists: game engine and Flask server, HTML/CSS/JS frontend, word lists, original `Specification.md`, updated `TODO.md`, dependency and deployment configuration, tests, and README with local run instructions.
+- [x] TODO.md checkmarks are up to date.
 
 ### Completion Criteria
 
@@ -436,7 +436,7 @@ A new user can clone the project, install dependencies, start the server, play f
 - [x] Run the app locally with gunicorn using the same start command as Render.
 - [x] Deploy to Render from the GitHub repo. Live at https://cse4095-hangman.onrender.com
 - [x] Check the live URL with `curl`: `/api/health`, then a full game through `/api/games`.
-- [ ] Check the live URL in the browser: play a full game. *(Waits for Phase 5, the web page.)*
+- [x] Check the live URL in the browser: play a full game.
 - [x] Add the live URL to the README.
 
 ### Completion Criteria
