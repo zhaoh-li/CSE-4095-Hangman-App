@@ -2,7 +2,7 @@
 
 This file is the implementation roadmap for the Hangman project.
 
-The authoritative system requirements are defined in `Specification.md`.
+The original system requirements are defined in `Specification.md`. Where they differ from the assignment or this TODO, the priority order below decides.
 
 > **`Specification.md` is read-only. Never edit, rename, move, or delete it.**
 > Where the assignment or this TODO differs from the spec, record the difference in this TODO and in the README, not in the spec.
@@ -114,8 +114,8 @@ Merged into Phase 1 (see the assignment note there). Phase numbers after this ar
 - [x] Return appropriate HTTP status codes.
 - [x] Handle unknown game IDs.
 - [x] Handle malformed requests.
-- [x] Match the spec's request and response JSON fields exactly:
-  - Create request: `{"difficulty": "easy" | "medium" | "hard"}` (lowercase).
+- [x] Include all of the spec's request and response JSON fields:
+  - Create request: `{"difficulty": "easy" | "medium" | "hard"}` (lowercase; case is ignored).
   - Guess request: `{"letter": "e"}`.
   - Responses include `pattern` (spaced, e.g. `_ e _ _ e`), `guessed_letters`, `incorrect_letters`, `remaining_guesses`, and `status`; create also returns `game_id`.
   - All three endpoints return the full game state (a superset of the spec's fields). The answer appears as `word` only after the game ends.
@@ -134,6 +134,8 @@ The browser and terminal clients are not required for this phase.
 ---
 
 ## Phase 4 — Human Terminal Client
+
+> **Assignment note:** Not required by the assignment; included as an extra client.
 
 ### Tasks
 
@@ -322,7 +324,7 @@ Completed evaluation runs can be ranked automatically and displayed consistently
 
 ### Tasks
 
-- [O] Ensure game state responses never contain the answer while status is `playing`.
+- [x] Ensure game state responses never contain the answer while status is `playing`. *(Required by the assignment; done for normal games in Phases 1 and 3.)*
 - [O] Ensure evaluation words are server-controlled.
 - [O] Prevent clients from requesting arbitrary evaluation game IDs.
 - [O] Reject malformed or unauthorized evaluation requests.
@@ -423,7 +425,7 @@ A new user can clone the project, install dependencies, start the server, play f
 
 ## Phase 15 — Deployment
 
-> **Done early:** This phase is completed at the end of Phase 3, not after Phase 14, so deployment problems show up while there is little code. Until Phase 5, the live URL serves only the API (`/` returns "Not Found"). Later phases deploy automatically on each `git push` to `main`.
+> **Done early:** This phase was completed at the end of Phase 3, not after Phase 14, so deployment problems would show up while there was little code. Before Phase 5, the live URL served only the API (`/` returned "Not Found"); the web page has been live since Phase 5. Every `git push` to `main` redeploys automatically.
 
 > **Assignment note:** The assignment requires deploying your own implementation, and the repository must contain the dependency and deployment configuration. Settings typed into Render's dashboard are not visible in the repo, so they live in `render.yaml`.
 
@@ -451,36 +453,36 @@ These should not be implemented until the core project is stable.
 
 ## Persistent Storage
 
-- [ ] Store games in a database.
-- [ ] Store evaluations in a database.
-- [ ] Persist leaderboard results.
+- [O] Store games in a database.
+- [O] Store evaluations in a database.
+- [O] Persist leaderboard results.
 
 ## Accounts and Authentication
 
-- [ ] Student accounts.
-- [ ] API keys or tokens.
-- [ ] Authenticated evaluation submissions.
+- [O] Student accounts.
+- [O] API keys or tokens.
+- [O] Authenticated evaluation submissions.
 
 ## Tournament Mode
 
-- [ ] Batch evaluation of multiple bots.
-- [ ] Scheduled tournaments.
-- [ ] Tournament history.
-- [ ] Public results page.
+- [O] Batch evaluation of multiple bots.
+- [O] Scheduled tournaments.
+- [O] Tournament history.
+- [O] Public results page.
 
 ## Advanced Bot Analysis
 
-- [ ] Entropy-based guessing.
-- [ ] Information-gain strategies.
-- [ ] Performance charts.
-- [ ] Per-difficulty statistics.
-- [ ] Head-to-head bot comparisons.
+- [O] Entropy-based guessing.
+- [O] Information-gain strategies.
+- [O] Performance charts.
+- [O] Per-difficulty statistics.
+- [O] Head-to-head bot comparisons.
 
 ## Multiplayer
 
-- [ ] Human-vs-human modes.
-- [ ] Custom words.
-- [ ] Spectator mode.
+- [O] Human-vs-human modes.
+- [O] Custom words.
+- [O] Spectator mode.
 
 ---
 
